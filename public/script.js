@@ -90,3 +90,99 @@ function renderStars(rating) {
   const empty = 5 - full - half;
   return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty);
 }
+
+function createCarCard(car, showBookBtn = true) {
+  const card = document.createElement('div');
+  card.className = 'car-card';
+
+  const availBadge = car.available
+    ? '<span class="badge badge-available">✓ Available</span>'
+    : '<span class="badge badge-unavailable">✗ Unavailable</span>';
+
+  card.innerHTML = `
+    <img src="${car.image}" alt="${car.brand} ${car.model}" loading="lazy"
+         onerror="this.src='https://placehold.co/300x180/888/white?text=No+Image'" />
+    <div class="car-card-body">
+      <div class="car-card-title">
+        <span>${car.brand} ${car.model}</span>
+        ${availBadge}
+      </div>
+      <div class="car-card-meta">
+        <span>🏷 ${car.type}</span>
+        <span>📍 ${car.location}</span>
+        <span>⭐ ${renderStars(car.rating)} (${car.rating})</span>
+        <span>🛣 ${car.mileage.toLocaleString()} km</span>
+      </div>
+      <div class="car-card-price">$${car.pricePerDay} <span>/ day</span></div>
+    </div>
+    <div class="car-card-footer">
+      ${showBookBtn ? `<button class="btn btn-primary btn-sm" data-book="${car.id}">
+        ${car.available ? 'Book Now' : '📋 Join Waitlist'}
+      </button>` : '<span></span>'}
+    </div>
+  `;
+
+  if (showBookBtn) {
+    card.querySelector(`[data-book]`).addEventListener('click', () => openBookingModal(car));
+  }
+
+  return card;
+}
+
+function renderGrid(container, cars, showBookBtn = true) {
+  container.innerHTML = '';
+  if (!cars.length) {
+    container.innerHTML = '<p class="empty-state">No cars found.</p>';
+    return;
+  }
+  cars.forEach(car => container.appendChild(createCarCard(car, showBookBtn)));
+}
+
+async function loadCars(params = '') {
+  carsGrid.innerHTML = '<p class="loading">Loading cars…</p>';
+  algoBadge.classList.add('hidden');
+
+  try {
+    const data = await apiFetch(`/cars${params}`);
+    allCars = data.cars;
+
+    if (data.algorithm) {
+      algoBadge.textContent =
+        `⚙ Algorithm: ${data.algorithm}  ·  Sorted by: ${data.sortedBy}  ·  Order: ${data.order}`;
+      algoBadge.classList.remove('hidden');
+    }
+
+    renderGrid(carsGrid, allCars);
+  } catch (err) {
+    carsGrid.innerHTML = `<p class="empty-state">Error: ${err.message}</p>`;
+  }
+}
+
+btnSort.addEventListener('click', () => {
+  const key   = sortKey.value;
+  const order = sortOrder.value;
+  const algo  = sortAlgo.value;
+
+  if (!key) return loadCars();
+  loadCars(`?sort=${key}&order=${order}&algo=${algo}`);
+});
+
+priceSlider.addEventListener('input', () => {
+  priceLabel.textContent = `≤ $${priceSlider.value} / day`;
+});
+
+function updateCostPreview() {
+  if (!currentCarId) return;
+  const car   = allCars.find(c => c.id === currentCarId);
+  if (!car) return;
+  const start = new Date(bStart.value);
+  const end   = new Date(bEnd.value);
+  if (isNaN(start) || isNaN(end) || end <= start) {
+    costPreview.classList.add('hidden');
+    return;
+  }
+  const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+  const cost = (days * car.pricePerDay).toFixed(2);
+  costPreview.textContent = `Estimated cost: ${days} day(s) × $${car.pricePerDay} = $${cost}`;
+  costPreview.classList.remove('hidden');
+}
