@@ -80,3 +80,82 @@ router.get('/search/price', (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+router.post('/', (req, res) => {
+  try {
+    const { brand, model, type, location, pricePerDay, rating, mileage, image } = req.body;
+
+    if (!brand || !model || !type || !location || !pricePerDay) {
+      return res.status(400).json({ error: 'brand, model, type, location, and pricePerDay are required.' });
+    }
+
+    const newCar = {
+      id:          uuidv4(),
+      brand:       brand.trim(),
+      model:       model.trim(),
+      type:        type.trim(),
+      location:    location.trim(),
+      pricePerDay: parseFloat(pricePerDay),
+      rating:      parseFloat(rating) || 0,
+      mileage:     parseInt(mileage)  || 0,
+      available:   true,
+      image:       image || `https://placehold.co/300x180/888/white?text=${encodeURIComponent(brand + ' ' + model)}`,
+    };
+
+    const cars = readJSON(CARS_FILE);
+    cars.push(newCar);
+    writeJSON(CARS_FILE, cars);
+
+    availabilityMap.add(newCar.id, true);
+
+    res.status(201).json({ message: 'Car added successfully.', car: newCar });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.put('/:id', (req, res) => {
+  try {
+    const cars = readJSON(CARS_FILE);
+    const idx  = cars.findIndex(c => c.id === req.params.id);
+
+    if (idx === -1) return res.status(404).json({ error: 'Car not found.' });
+
+    const allowed = ['brand', 'model', 'type', 'location', 'pricePerDay', 'rating', 'mileage', 'available', 'image'];
+    allowed.forEach(field => {
+      if (req.body[field] !== undefined) {
+        cars[idx][field] = req.body[field];
+      }
+    });
+
+    writeJSON(CARS_FILE, cars);
+
+    if (req.body.available !== undefined) {
+      availabilityMap.add(req.params.id, req.body.available);
+    }
+
+    res.json({ message: 'Car updated successfully.', car: cars[idx] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.delete('/:id', (req, res) => {
+  try {
+    const cars    = readJSON(CARS_FILE);
+    const idx     = cars.findIndex(c => c.id === req.params.id);
+
+    if (idx === -1) return res.status(404).json({ error: 'Car not found.' });
+
+    const [removed] = cars.splice(idx, 1);
+    writeJSON(CARS_FILE, cars);
+
+    availabilityMap.remove(removed.id);
+
+    res.json({ message: 'Car deleted successfully.', car: removed });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+module.exports = router;
