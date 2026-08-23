@@ -74,6 +74,7 @@ navLinks.forEach(link => {
     if (target === 'admin')   loadAdminTable();
   });
 });
+
 async function apiFetch(url, options = {}) {
   const res = await fetch(url, {
     headers: { 'Content-Type': 'application/json' },

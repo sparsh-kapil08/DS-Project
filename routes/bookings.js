@@ -142,7 +142,7 @@ router.delete('/undo', (req, res) => {
       bookingStack.push(promoted);
       availabilityMap.setAvailability(lastBooking.carId, false);
     }
-    
+
     res.json({
       message:   `Booking for ${lastBooking.carLabel} by ${lastBooking.userName} has been undone.`,
       undone:    lastBooking,
