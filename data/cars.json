@@ -106,5 +106,41 @@
     "mileage": 20000,
     "available": false,
     "image": "https://placehold.co/300x180/8E44AD/white?text=Hyundai+Tucson"
+  },
+  {
+    "id": "c10",
+    "brand": "Chevrolet",
+    "model": "Corvette",
+    "type": "Sports",
+    "location": "Miami",
+    "pricePerDay": 150,
+    "rating": 4.9,
+    "mileage": 4100,
+    "available": true,
+    "image": "https://placehold.co/300x180/C0392B/white?text=Chevrolet+Corvette"
+  },
+  {
+    "id": "c11",
+    "brand": "Nissan",
+    "model": "Altima",
+    "type": "Sedan",
+    "location": "Phoenix",
+    "pricePerDay": 48,
+    "rating": 4.1,
+    "mileage": 25000,
+    "available": true,
+    "image": "https://placehold.co/300x180/27AE60/white?text=Nissan+Altima"
+  },
+  {
+    "id": "c12",
+    "brand": "Ford",
+    "model": "Explorer",
+    "type": "SUV",
+    "location": "Chicago",
+    "pricePerDay": 80,
+    "rating": 4.5,
+    "mileage": 11000,
+    "available": true,
+    "image": "https://placehold.co/300x180/2980B9/white?text=Ford+Explorer"
   }
 ]
