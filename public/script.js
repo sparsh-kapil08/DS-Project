@@ -186,3 +186,108 @@ function updateCostPreview() {
   costPreview.textContent = `Estimated cost: ${days} day(s) × $${car.pricePerDay} = $${cost}`;
   costPreview.classList.remove('hidden');
 }
+
+bStart.addEventListener('change', updateCostPreview);
+bEnd.addEventListener('change', updateCostPreview);
+
+btnTextSearch.addEventListener('click', async () => {
+  const q = searchQuery.value.trim();
+  if (!q) { showToast('Please enter a search term.', 'warning'); return; }
+
+  searchGrid.innerHTML = '<p class="loading">Searching…</p>';
+  searchAlgoBadge.classList.add('hidden');
+
+  try {
+    const data = await apiFetch(`/cars/search?q=${encodeURIComponent(q)}`);
+    searchAlgoBadge.textContent =
+      `⚙ Algorithm: ${data.algorithm}  ·  Query: "${data.query}"  ·  ${data.count} result(s)`;
+    searchAlgoBadge.classList.remove('hidden');
+    renderGrid(searchGrid, data.cars);
+  } catch (err) {
+    searchGrid.innerHTML = `<p class="empty-state">Error: ${err.message}</p>`;
+  }
+});
+
+btnPriceSearch.addEventListener('click', async () => {
+  const max = priceSlider.value;
+  searchGrid.innerHTML = '<p class="loading">Searching…</p>';
+  searchAlgoBadge.classList.add('hidden');
+
+  try {
+    const data = await apiFetch(`/cars/search/price?maxPrice=${max}`);
+    searchAlgoBadge.textContent =
+      `⚙ Algorithm: ${data.algorithm}  ·  Max Price: $${data.maxPrice}/day  ·  ${data.count} result(s)`;
+    searchAlgoBadge.classList.remove('hidden');
+    renderGrid(searchGrid, data.cars);
+  } catch (err) {
+    searchGrid.innerHTML = `<p class="empty-state">Error: ${err.message}</p>`;
+  }
+});
+
+searchQuery.addEventListener('keydown', e => {
+  if (e.key === 'Enter') btnTextSearch.click();
+});
+
+async function openBookingModal(car) {
+  currentCarId = car.id;
+
+  modalCarLabel.textContent = `${car.available ? 'Book' : 'Join Waitlist for'} ${car.brand} ${car.model}`;
+  modalCarMeta.textContent  = `${car.type} · ${car.location} · $${car.pricePerDay}/day · ⭐ ${car.rating}`;
+  modalCarId.value = car.id;
+  costPreview.classList.add('hidden');
+
+  if (!car.available) {
+    try {
+      const wl = await apiFetch(`/bookings/waitlist/${car.id}`);
+      waitlistInfo.textContent =
+        `⚠ This car is currently unavailable. ${wl.count > 0
+          ? `${wl.count} person(s) are ahead of you in the queue.`
+          : 'You will be first in the queue!'}`;
+      waitlistInfo.classList.remove('hidden');
+    } catch {
+      waitlistInfo.classList.add('hidden');
+    }
+    btnBookConfirm.textContent = '📋 Join Waitlist';
+    btnBookConfirm.className   = 'btn btn-warning full-width';
+  } else {
+    waitlistInfo.classList.add('hidden');
+    btnBookConfirm.textContent = '✓ Confirm Booking';
+    btnBookConfirm.className   = 'btn btn-primary full-width';
+  }
+
+  const today = new Date().toISOString().split('T')[0];
+  bStart.min = today;
+  bEnd.min   = today;
+  bStart.value = '';
+  bEnd.value   = '';
+  bName.value  = '';
+
+  bookingModal.classList.remove('hidden');
+  bName.focus();
+}
+
+modalClose.addEventListener('click', () => bookingModal.classList.add('hidden'));
+bookingModal.addEventListener('click', e => {
+  if (e.target === bookingModal) bookingModal.classList.add('hidden');
+});
+
+bookingForm.addEventListener('submit', async e => {
+  e.preventDefault();
+
+  const payload = {
+    carId:     modalCarId.value,
+    userName:  bName.value.trim(),
+    startDate: bStart.value,
+    endDate:   bEnd.value,
+  };
+
+  if (!payload.userName) { showToast('Please enter your name.', 'warning'); return; }
+  if (!payload.startDate || !payload.endDate) {
+    showToast('Please select both dates.', 'warning'); return;
+  }
+  if (new Date(payload.endDate) <= new Date(payload.startDate)) {
+    showToast('End date must be after start date.', 'warning'); return;
+  }
+
+  btnBookConfirm.disabled = true;
+  btnBookConfirm.textContent = 'Processing…';
