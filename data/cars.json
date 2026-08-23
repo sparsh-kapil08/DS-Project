@@ -1,0 +1,38 @@
+[
+  {
+    "id": "c1",
+    "brand": "Toyota",
+    "model": "Camry",
+    "type": "Sedan",
+    "location": "New York",
+    "pricePerDay": 55,
+    "rating": 4.5,
+    "mileage": 12000,
+    "available": false,
+    "image": "https://placehold.co/300x180/4A90D9/white?text=Toyota+Camry"
+  },
+  {
+    "id": "c2",
+    "brand": "Honda",
+    "model": "CR-V",
+    "type": "SUV",
+    "location": "Los Angeles",
+    "pricePerDay": 75,
+    "rating": 4.7,
+    "mileage": 8500,
+    "available": true,
+    "image": "https://placehold.co/300x180/E94E77/white?text=Honda+CR-V"
+  },
+  {
+    "id": "c3",
+    "brand": "Ford",
+    "model": "Mustang",
+    "type": "Sports",
+    "location": "Miami",
+    "pricePerDay": 110,
+    "rating": 4.8,
+    "mileage": 5200,
+    "available": true,
+    "image": "https://placehold.co/300x180/F5A623/white?text=Ford+Mustang"
+  }
+]
