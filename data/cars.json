@@ -70,5 +70,41 @@
     "mileage": 22000,
     "available": true,
     "image": "https://placehold.co/300x180/D35400/white?text=Jeep+Wrangler"
+  },
+  {
+    "id": "c7",
+    "brand": "Toyota",
+    "model": "Prius",
+    "type": "Hybrid",
+    "location": "Seattle",
+    "pricePerDay": 60,
+    "rating": 4.3,
+    "mileage": 18000,
+    "available": true,
+    "image": "https://placehold.co/300x180/1ABC9C/white?text=Toyota+Prius"
+  },
+  {
+    "id": "c8",
+    "brand": "Mercedes",
+    "model": "GLE",
+    "type": "SUV",
+    "location": "New York",
+    "pricePerDay": 140,
+    "rating": 4.8,
+    "mileage": 6000,
+    "available": true,
+    "image": "https://placehold.co/300x180/2C3E50/white?text=Mercedes+GLE"
+  },
+  {
+    "id": "c9",
+    "brand": "Hyundai",
+    "model": "Tucson",
+    "type": "SUV",
+    "location": "Houston",
+    "pricePerDay": 65,
+    "rating": 4.2,
+    "mileage": 20000,
+    "available": false,
+    "image": "https://placehold.co/300x180/8E44AD/white?text=Hyundai+Tucson"
   }
 ]
