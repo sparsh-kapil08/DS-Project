@@ -7,3 +7,194 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <nav class="navbar">
+    <div class="nav-brand">🚗 CarRental</div>
+    <ul class="nav-links">
+      <li><a href="#" data-section="browse" class="nav-link active">Browse</a></li>
+      <li><a href="#" data-section="search" class="nav-link">Search</a></li>
+      <li><a href="#" data-section="history" class="nav-link">History</a></li>
+      <li><a href="#" data-section="admin" class="nav-link">Admin</a></li>
+    </ul>
+  </nav>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <section id="section-browse" class="section active">
+    <div class="section-header">
+      <h2>Browse Cars</h2>
+      <div class="sort-controls">
+        <label>Sort by:</label>
+        <select id="sort-key">
+          <option value="">— None —</option>
+          <option value="price">Price</option>
+          <option value="rating">Rating</option>
+          <option value="mileage">Mileage</option>
+        </select>
+        <select id="sort-order">
+          <option value="asc">↑ Ascending</option>
+          <option value="desc">↓ Descending</option>
+        </select>
+        <select id="sort-algo">
+          <option value="insertion">Insertion Sort</option>
+          <option value="quick">Quick Sort</option>
+        </select>
+        <button id="btn-sort" class="btn btn-primary">Apply Sort</button>
+      </div>
+    </div>
+
+    <div id="algo-badge" class="algo-badge hidden"></div>
+    <div id="cars-grid" class="cars-grid">
+      <p class="loading">Loading cars…</p>
+    </div>
+  </section>
+
+  <section id="section-search" class="section">
+    <div class="section-header">
+      <h2>Search Cars</h2>
+    </div>
+
+    <div class="search-panel card">
+      <h3>🔍 Text Search <span class="badge badge-info">Linear Search — O(n)</span></h3>
+      <p class="hint">Search by brand, model, type, or location.</p>
+      <div class="input-row">
+        <input type="text" id="search-query" placeholder="e.g. SUV, Toyota, Miami…" />
+        <button id="btn-text-search" class="btn btn-primary">Search</button>
+      </div>
+    </div>
+
+    <div class="search-panel card" style="margin-top:1.5rem">
+      <h3>💰 Price Search <span class="badge badge-success">Binary Search — O(log n)</span></h3>
+      <p class="hint">Find all cars up to a maximum daily price.</p>
+      <div class="input-row">
+        <div class="slider-wrap">
+          <input type="range" id="price-slider" min="40" max="160" value="100" step="5" />
+          <span id="price-label">≤ $100 / day</span>
+        </div>
+        <button id="btn-price-search" class="btn btn-success">Search</button>
+      </div>
+    </div>
+
+    <div id="search-algo-badge" class="algo-badge hidden"></div>
+    <div id="search-results-grid" class="cars-grid"></div>
+  </section>
+
+  <section id="section-history" class="section">
+    <div class="section-header">
+      <h2>Booking History <span class="badge badge-warning">Stack — LIFO</span></h2>
+      <button id="btn-undo" class="btn btn-danger">↩ Undo Last Booking</button>
+    </div>
+    <div id="history-list" class="history-list">
+      <p class="loading">Loading history…</p>
+    </div>
+  </section>
+
+  <section id="section-admin" class="section">
+    <div class="section-header">
+      <h2>Admin Panel</h2>
+      <button id="btn-show-add-form" class="btn btn-primary">+ Add New Car</button>
+    </div>
+
+    <div id="car-form-wrap" class="card hidden">
+      <h3 id="form-title">Add New Car</h3>
+      <form id="car-form" class="car-form">
+        <input type="hidden" id="form-car-id" />
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Brand *</label>
+            <input type="text" id="f-brand" required placeholder="Toyota" />
+          </div>
+          <div class="form-group">
+            <label>Model *</label>
+            <input type="text" id="f-model" required placeholder="Camry" />
+          </div>
+          <div class="form-group">
+            <label>Type *</label>
+            <select id="f-type" required>
+              <option value="">Select type…</option>
+              <option>Sedan</option>
+              <option>SUV</option>
+              <option>Sports</option>
+              <option>Electric</option>
+              <option>Hybrid</option>
+              <option>Truck</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Location *</label>
+            <input type="text" id="f-location" required placeholder="New York" />
+          </div>
+          <div class="form-group">
+            <label>Price / Day ($) *</label>
+            <input type="number" id="f-price" required min="1" placeholder="55" />
+          </div>
+          <div class="form-group">
+            <label>Rating (0–5)</label>
+            <input type="number" id="f-rating" min="0" max="5" step="0.1" placeholder="4.5" />
+          </div>
+          <div class="form-group">
+            <label>Mileage (km)</label>
+            <input type="number" id="f-mileage" min="0" placeholder="12000" />
+          </div>
+          <div class="form-group">
+            <label>Image URL</label>
+            <input type="url" id="f-image" placeholder="https://…" />
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" id="form-submit-btn">Add Car</button>
+          <button type="button" id="btn-cancel-form" class="btn btn-secondary">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="table-wrap">
+      <table id="admin-table" class="admin-table">
+        <thead>
+          <tr>
+            <th>Brand / Model</th>
+            <th>Type</th>
+            <th>Location</th>
+            <th>Price/Day</th>
+            <th>Rating</th>
+            <th>Available</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="admin-tbody">
+          <tr><td colspan="7" class="loading">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div id="booking-modal" class="modal-overlay hidden">
+    <div class="modal">
+      <button class="modal-close" id="modal-close">✕</button>
+      <h3 id="modal-car-label">Book Car</h3>
+      <p id="modal-car-meta" class="modal-meta"></p>
+
+      <div id="waitlist-info" class="waitlist-info hidden"></div>
+
+      <form id="booking-form" class="booking-form">
+        <input type="hidden" id="modal-car-id" />
+        <div class="form-group">
+          <label>Your Name *</label>
+          <input type="text" id="b-name" required placeholder="Alice" />
+        </div>
+        <div class="form-group">
+          <label>Start Date *</label>
+          <input type="date" id="b-start" required />
+        </div>
+        <div class="form-group">
+          <label>End Date *</label>
+          <input type="date" id="b-end" required />
+        </div>
+        <div id="booking-cost-preview" class="cost-preview hidden"></div>
+        <button type="submit" class="btn btn-primary full-width" id="btn-book-confirm">Confirm Booking</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
