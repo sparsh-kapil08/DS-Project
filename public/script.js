@@ -291,3 +291,132 @@ bookingForm.addEventListener('submit', async e => {
 
   btnBookConfirm.disabled = true;
   btnBookConfirm.textContent = 'Processing…';
+
+  try {
+    const data = await apiFetch('/bookings', {
+      method: 'POST',
+      body:   JSON.stringify(payload),
+    });
+
+    bookingModal.classList.add('hidden');
+
+    if (data.status === 'confirmed') {
+      showToast(`✅ ${data.message}`, 'success', 5000);
+    } else {
+      showToast(`📋 ${data.message}`, 'warning', 5000);
+    }
+
+    loadCars();
+    if (document.getElementById('section-history').classList.contains('active')) {
+      loadHistory();
+    }
+
+  } catch (err) {
+    showToast(`❌ ${err.message}`, 'error');
+  } finally {
+    btnBookConfirm.disabled = false;
+  }
+});
+
+async function loadHistory() {
+  historyList.innerHTML = '<p class="loading">Loading history…</p>';
+
+  try {
+    const data = await apiFetch('/bookings/history');
+
+    if (!data.history.length) {
+      historyList.innerHTML = '<p class="empty-state">No bookings in the stack yet.</p>';
+      return;
+    }
+
+    historyList.innerHTML = '';
+    data.history.forEach((b, idx) => {
+      const card = document.createElement('div');
+      card.className = 'history-card';
+
+      const topBadge = idx === 0
+        ? '<span class="badge badge-warning" style="margin-left:.5rem">← TOP</span>'
+        : '';
+
+      card.innerHTML = `
+        <div>
+          <h4>${b.carLabel} ${topBadge}
+            <span class="stack-pos">Stack position: ${idx + 1}</span>
+            ${b.promotedFrom ? '<span class="badge badge-info" style="margin-left:.4rem">From Waitlist</span>' : ''}
+          </h4>
+          <p>👤 ${b.userName}  ·  📅 ${b.startDate} → ${b.endDate}  ·  ${b.days} day(s)</p>
+          <p style="margin-top:.2rem; font-size:.75rem; color:var(--muted)">
+            Booked at: ${new Date(b.timestamp).toLocaleString()}
+          </p>
+        </div>
+        <div class="cost">$${b.totalCost}</div>
+      `;
+
+      historyList.appendChild(card);
+    });
+  } catch (err) {
+    historyList.innerHTML = `<p class="empty-state">Error: ${err.message}</p>`;
+  }
+}
+
+btnUndo.addEventListener('click', async () => {
+  if (!confirm('Undo the last booking? This will restore the car\'s availability.')) return;
+
+  try {
+    const data = await apiFetch('/bookings/undo', { method: 'DELETE' });
+    let msg = `↩ ${data.message}`;
+    if (data.promoted) {
+      msg += ` · ${data.promoted.userName} from the waitlist was auto-promoted!`;
+    }
+    showToast(msg, 'success', 6000);
+    loadHistory();
+    loadCars();
+  } catch (err) {
+    showToast(`❌ ${err.message}`, 'error');
+  }
+});
+
+async function loadAdminTable() {
+  adminTbody.innerHTML = '<tr><td colspan="7" class="loading">Loading…</td></tr>';
+
+  try {
+    const data = await apiFetch('/cars');
+
+    if (!data.cars.length) {
+      adminTbody.innerHTML = '<tr><td colspan="7" class="empty-state">No cars found.</td></tr>';
+      return;
+    }
+
+    adminTbody.innerHTML = '';
+    data.cars.forEach(car => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${car.brand} ${car.model}</strong></td>
+        <td>${car.type}</td>
+        <td>${car.location}</td>
+        <td>$${car.pricePerDay}</td>
+        <td>⭐ ${car.rating}</td>
+        <td>
+          <span class="badge ${car.available ? 'badge-available' : 'badge-unavailable'}">
+            ${car.available ? 'Yes' : 'No'}
+          </span>
+        </td>
+        <td>
+          <div class="action-btns">
+            <button class="btn btn-secondary btn-sm" data-edit="${car.id}">Edit</button>
+            <button class="btn btn-danger btn-sm"    data-delete="${car.id}">Delete</button>
+          </div>
+        </td>
+      `;
+
+      tr.querySelector(`[data-edit]`).addEventListener('click', () => openEditForm(car));
+      tr.querySelector(`[data-delete]`).addEventListener('click', () => deleteCar(car));
+
+      adminTbody.appendChild(tr);
+    });
+  } catch (err) {
+    adminTbody.innerHTML = `<tr><td colspan="7" class="empty-state">Error: ${err.message}</td></tr>`;
+  }
+}
+
+
