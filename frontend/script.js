@@ -1,5 +1,7 @@
 'use strict';
 
+const API = import.meta.env.VITE_API_URL || '';
+
 let allCars       = [];
 let currentCarId  = null;
 
@@ -75,8 +77,8 @@ navLinks.forEach(link => {
   });
 });
 
-async function apiFetch(url, options = {}) {
-  const res = await fetch(url, {
+async function apiFetch(path, options = {}) {
+  const res = await fetch(`${API}${path}`, {
     headers: { 'Content-Type': 'application/json' },
     ...options,
   });

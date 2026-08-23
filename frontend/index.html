@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🚗 Car Rental System</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
 
@@ -42,7 +42,6 @@
         <button id="btn-sort" class="btn btn-primary">Apply Sort</button>
       </div>
     </div>
-
     <div id="algo-badge" class="algo-badge hidden"></div>
     <div id="cars-grid" class="cars-grid">
       <p class="loading">Loading cars…</p>
@@ -53,7 +52,6 @@
     <div class="section-header">
       <h2>Search Cars</h2>
     </div>
-
     <div class="search-panel card">
       <h3>🔍 Text Search <span class="badge badge-info">Linear Search — O(n)</span></h3>
       <p class="hint">Search by brand, model, type, or location.</p>
@@ -62,7 +60,6 @@
         <button id="btn-text-search" class="btn btn-primary">Search</button>
       </div>
     </div>
-
     <div class="search-panel card" style="margin-top:1.5rem">
       <h3>💰 Price Search <span class="badge badge-success">Binary Search — O(log n)</span></h3>
       <p class="hint">Find all cars up to a maximum daily price.</p>
@@ -74,7 +71,6 @@
         <button id="btn-price-search" class="btn btn-success">Search</button>
       </div>
     </div>
-
     <div id="search-algo-badge" class="algo-badge hidden"></div>
     <div id="search-results-grid" class="cars-grid"></div>
   </section>
@@ -94,7 +90,6 @@
       <h2>Admin Panel</h2>
       <button id="btn-show-add-form" class="btn btn-primary">+ Add New Car</button>
     </div>
-
     <div id="car-form-wrap" class="card hidden">
       <h3 id="form-title">Add New Car</h3>
       <form id="car-form" class="car-form">
@@ -147,7 +142,6 @@
         </div>
       </form>
     </div>
-
     <div class="table-wrap">
       <table id="admin-table" class="admin-table">
         <thead>
@@ -173,9 +167,7 @@
       <button class="modal-close" id="modal-close">✕</button>
       <h3 id="modal-car-label">Book Car</h3>
       <p id="modal-car-meta" class="modal-meta"></p>
-
       <div id="waitlist-info" class="waitlist-info hidden"></div>
-
       <form id="booking-form" class="booking-form">
         <input type="hidden" id="modal-car-id" />
         <div class="form-group">
@@ -196,6 +188,6 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script type="module" src="./script.js"></script>
 </body>
 </html>
