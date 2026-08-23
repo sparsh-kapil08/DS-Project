@@ -1,0 +1,15 @@
+[
+  {
+    "id": "35e787dc-c62f-4d4f-ae60-3a353c4b3486",
+    "carId": "c1",
+    "userName": "Alice",
+    "carLabel": "Toyota Camry",
+    "startDate": "2026-09-05",
+    "endDate": "2026-09-10",
+    "days": 5,
+    "totalCost": 275,
+    "status": "confirmed",
+    "timestamp": 1787475715601,
+    "promotedFrom": "waitlist"
+  }
+]
