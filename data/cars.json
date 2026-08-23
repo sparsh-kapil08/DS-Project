@@ -34,5 +34,41 @@
     "mileage": 5200,
     "available": true,
     "image": "https://placehold.co/300x180/F5A623/white?text=Ford+Mustang"
+  },
+  {
+    "id": "c4",
+    "brand": "BMW",
+    "model": "3 Series",
+    "type": "Sedan",
+    "location": "Chicago",
+    "pricePerDay": 95,
+    "rating": 4.6,
+    "mileage": 15000,
+    "available": false,
+    "image": "https://placehold.co/300x180/7B68EE/white?text=BMW+3+Series"
+  },
+  {
+    "id": "c5",
+    "brand": "Tesla",
+    "model": "Model 3",
+    "type": "Electric",
+    "location": "San Francisco",
+    "pricePerDay": 120,
+    "rating": 4.9,
+    "mileage": 3000,
+    "available": true,
+    "image": "https://placehold.co/300x180/50C878/white?text=Tesla+Model+3"
+  },
+  {
+    "id": "c6",
+    "brand": "Jeep",
+    "model": "Wrangler",
+    "type": "SUV",
+    "location": "Denver",
+    "pricePerDay": 85,
+    "rating": 4.4,
+    "mileage": 22000,
+    "available": true,
+    "image": "https://placehold.co/300x180/D35400/white?text=Jeep+Wrangler"
   }
 ]
