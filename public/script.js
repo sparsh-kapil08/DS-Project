@@ -419,4 +419,84 @@ async function loadAdminTable() {
   }
 }
 
+btnShowAddForm.addEventListener('click', () => {
+  carFormWrap.classList.toggle('hidden');
+  if (!carFormWrap.classList.contains('hidden')) {
+    formTitle.textContent      = 'Add New Car';
+    formSubmitBtn.textContent  = 'Add Car';
+    formCarId.value            = '';
+    carForm.reset();
+    carFormWrap.scrollIntoView({ behavior: 'smooth' });
+  }
+});
 
+btnCancelForm.addEventListener('click', () => {
+  carFormWrap.classList.add('hidden');
+  carForm.reset();
+  formCarId.value = '';
+});
+
+function openEditForm(car) {
+  formTitle.textContent     = `Edit — ${car.brand} ${car.model}`;
+  formSubmitBtn.textContent = 'Save Changes';
+  formCarId.value = car.id;
+
+  document.getElementById('f-brand').value    = car.brand;
+  document.getElementById('f-model').value    = car.model;
+  document.getElementById('f-type').value     = car.type;
+  document.getElementById('f-location').value = car.location;
+  document.getElementById('f-price').value    = car.pricePerDay;
+  document.getElementById('f-rating').value   = car.rating;
+  document.getElementById('f-mileage').value  = car.mileage;
+  document.getElementById('f-image').value    = car.image;
+
+  carFormWrap.classList.remove('hidden');
+  carFormWrap.scrollIntoView({ behavior: 'smooth' });
+}
+
+carForm.addEventListener('submit', async e => {
+  e.preventDefault();
+
+  const id = formCarId.value;
+  const payload = {
+    brand:       document.getElementById('f-brand').value.trim(),
+    model:       document.getElementById('f-model').value.trim(),
+    type:        document.getElementById('f-type').value,
+    location:    document.getElementById('f-location').value.trim(),
+    pricePerDay: parseFloat(document.getElementById('f-price').value),
+    rating:      parseFloat(document.getElementById('f-rating').value) || 0,
+    mileage:     parseInt(document.getElementById('f-mileage').value)  || 0,
+    image:       document.getElementById('f-image').value.trim(),
+  };
+
+  try {
+    if (id) {
+      await apiFetch(`/cars/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
+      showToast('✅ Car updated successfully!', 'success');
+    } else {
+      await apiFetch('/cars', { method: 'POST', body: JSON.stringify(payload) });
+      showToast('✅ Car added successfully!', 'success');
+    }
+
+    carFormWrap.classList.add('hidden');
+    carForm.reset();
+    formCarId.value = '';
+    loadAdminTable();
+  } catch (err) {
+    showToast(`❌ ${err.message}`, 'error');
+  }
+});
+
+async function deleteCar(car) {
+  if (!confirm(`Delete ${car.brand} ${car.model}? This cannot be undone.`)) return;
+
+  try {
+    await apiFetch(`/cars/${car.id}`, { method: 'DELETE' });
+    showToast(`🗑 ${car.brand} ${car.model} deleted.`, 'default');
+    loadAdminTable();
+  } catch (err) {
+    showToast(`❌ ${err.message}`, 'error');
+  }
+}
+
+loadCars();
