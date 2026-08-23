@@ -39,3 +39,44 @@ router.get('/', (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+router.get('/search', (req, res) => {
+  try {
+    const { q } = req.query;
+    if (!q) return res.status(400).json({ error: 'Query param "q" is required.' });
+
+    const cars    = readJSON(CARS_FILE);
+    const results = linearSearch(cars, q);
+
+    res.json({
+      query: q,
+      algorithm: 'Linear Search',
+      count: results.length,
+      cars: results,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get('/search/price', (req, res) => {
+  try {
+    const maxPrice = parseFloat(req.query.maxPrice);
+    if (isNaN(maxPrice)) {
+      return res.status(400).json({ error: 'Query param "maxPrice" must be a number.' });
+    }
+
+    const cars       = readJSON(CARS_FILE);
+    const sorted     = insertionSort(cars, 'pricePerDay', 'asc');
+    const results    = binarySearch(sorted, maxPrice);
+
+    res.json({
+      maxPrice,
+      algorithm: 'Insertion Sort → Binary Search',
+      count: results.length,
+      cars: results,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
